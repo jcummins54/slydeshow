@@ -143,6 +143,8 @@ function changeCallback (currentSlide) {
         count = 0;
         slideshow.fn.addInterstitial(interstitial);
     }
+    console.log($(currentSlide).index());
+    console.log(currentSlide);
 }
 $(document).ready(function () {
     if ($('.slideshow').length !== 0) {
