@@ -10,8 +10,7 @@
     'use strict';
 
     $.fn.slydeshow = function (method, callback) {
-        var self = this,
-            container,
+        var container,
             duration = 700,
             easing = 'easeOutBack',
             methods,
@@ -51,7 +50,7 @@
                     methods.enable(event);
                 });
             },
-            changeCallback : function (selfRef) {
+            changeCallback : function (currentSlide) {
                 //Overwritten by user
             },
             enable : function (event) {
