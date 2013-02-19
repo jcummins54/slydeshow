@@ -2,14 +2,13 @@
 
 .slideshow {
     position: relative;
-    width: 100%;
+    width: 1130px;
     height: 380px;
 }
 
 .slide-container {
     position: relative;
-    min-width: 1000px;
-    max-width: 1070px;
+    width: 1000px;
     height: 380px;
     left: 60px;
     overflow: hidden;
