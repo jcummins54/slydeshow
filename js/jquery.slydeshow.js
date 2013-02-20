@@ -111,7 +111,7 @@
                 if (event) {
                     event.preventDefault();
                 }
-                if (!interstitial || interstitial === currentSlide) {
+                if (!interstitial || interstitial === currentSlide || interstitial === lastSlide) {
                     slideIndex += 1;
                     if (slideIndex > slideLimit) {
                         slideIndex = 0;
@@ -140,7 +140,7 @@
                 if (event) {
                     event.preventDefault();
                 }
-                if (!interstitial || interstitial === currentSlide) {
+                if (!interstitial || interstitial === currentSlide || interstitial === lastSlide) {
                     slideIndex -= 1;
                     if (slideIndex < 0) {
                         slideIndex = slideLimit;

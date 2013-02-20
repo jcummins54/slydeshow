@@ -162,7 +162,7 @@ var slideshow, count = 1,
     interstitial = '<div class="interstitial"><iframe src="ad.html" width="1000" height="300" frameborder="0"></iframe></div>';
 function changeCallback (currentSlide) {
     count += 1;
-    if (count > 1) {
+    if (count > 3) {
         count = -1;
         slideshow.fn.addInterstitial(interstitial);
     }
