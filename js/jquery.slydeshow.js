@@ -2,7 +2,7 @@
  * @name        jQuery Slydeshow Plugin
  * @author      Jeremy Cummins
  * @version     1.0
- * @url         http://www.royaldigit.com
+ * @url         http://www.royaldigit.com/slydeshow/
  * @license     MIT License
  */
 
@@ -17,7 +17,7 @@
             slideWidth = $(this).find('.slide-container:first').width(),
             containerWidth = $(this).width(),
             slideIndex = 0,
-            slideLimit = $(this).find('.slide-container ul li').size() - 1,
+            slideLimit = $(this).find('.slide-container ul:first > li').size() - 1,
             slides = [],
             currentSlide,
             lastSlide,
@@ -25,6 +25,8 @@
             touchstartTime,
             touchstartX,
             pillContainer,
+            arrowContainer,
+            touchable = true,
             interstitial;
 
         methods = {
@@ -37,7 +39,15 @@
                     if (options.easing) {
                         easing = options.easing;
                     }
-                    $(this).find('ul li').each(function () {
+                    if (options.arrowContainer) {
+                        arrowContainer = options.arrowContainer;
+                    } else {
+                        arrowContainer = container;
+                    }
+                    if (options.touchable) {
+                        touchable = true;
+                    }
+                    $(this).find('ul:first > li').each(function () {
                         if (!currentSlide) {
                             currentSlide = $(this);
                             $(this).css({display: 'block', position: 'absolute', width: slideWidth, left: 0, top: 0});
@@ -54,32 +64,39 @@
                 //Overwritten by user
             },
             enable : function (event) {
-                event = (!event)? window.event : event;
-                event.preventDefault();
-                container.find('.arrow-next').on('click', methods.next);
-                container.find('.arrow-prev').on('click', methods.prev);
-                container.find('.slide-container').on('touchstart', methods.touchstartHandler);
-                container.find('.slide-container').on('touchmove', methods.touchmoveHandler);
-                container.find('.slide-container').on('touchend', methods.touchendHandler);
+                if (event) {
+                    event.preventDefault();
+                }
+                arrowContainer.find('.arrow-next').on('click', methods.next);
+                arrowContainer.find('.arrow-prev').on('click', methods.prev);
+                if (touchable) {
+                    container.find('.slide-container').on('touchstart', methods.touchstartHandler);
+                    container.find('.slide-container').on('touchmove', methods.touchmoveHandler);
+                    container.find('.slide-container').on('touchend', methods.touchendHandler);
+                }
                 pillContainer.children().each(function() {
                     $(this).on('click', methods.pillClickHandler);
                 });
             },
             disable : function (event) {
-                event = (!event)? window.event : event;
-                event.preventDefault();
-                container.find('.arrow-next').off('click', methods.next);
-                container.find('.arrow-prev').off('click', methods.prev);
-                container.find('.slide-container').off('touchstart', methods.touchstartHandler);
-                container.find('.slide-container').off('touchmove', methods.touchmoveHandler);
-                container.find('.slide-container').off('touchend', methods.touchendHandler);
+                if (event) {
+                    event.preventDefault();
+                }
+                arrowContainer.find('.arrow-next').off('click', methods.next);
+                arrowContainer.find('.arrow-prev').off('click', methods.prev);
+                if (touchable) {
+                    container.find('.slide-container').off('touchstart', methods.touchstartHandler);
+                    container.find('.slide-container').off('touchmove', methods.touchmoveHandler);
+                    container.find('.slide-container').off('touchend', methods.touchendHandler);
+                }
                 pillContainer.children().each(function() {
                     $(this).off('click', methods.pillClickHandler);
                 });
             },
             next : function (event) {
-                event = (!event)? window.event : event;
-                event.preventDefault();
+                if (event) {
+                    event.preventDefault();
+                }
                 if (!interstitial || interstitial === currentSlide) {
                     slideIndex += 1;
                     if (slideIndex > slideLimit) {
@@ -89,8 +106,9 @@
                 methods.moveNext(event);
             },
             moveNext : function (event) {
-                event = (!event)? window.event : event;
-                event.preventDefault();
+                if (event) {
+                    event.preventDefault();
+                }
                 lastSlide = currentSlide;
                 lastSlide.stop().animate(
                     {left: -containerWidth},
@@ -104,8 +122,9 @@
                 methods.setPill(event);
             },
             prev : function (event) {
-                event = (!event)? window.event : event;
-                event.preventDefault();
+                if (event) {
+                    event.preventDefault();
+                }
                 if (!interstitial || interstitial === currentSlide) {
                     slideIndex -= 1;
                     if (slideIndex < 0) {
@@ -115,8 +134,9 @@
                 methods.movePrev(event);
             },
             movePrev : function (event) {
-                event = (!event)? window.event : event;
-                event.preventDefault();
+                if (event) {
+                    event.preventDefault();
+                }
                 lastSlide = currentSlide;
                 lastSlide.stop().animate(
                     {left: containerWidth},
@@ -138,10 +158,10 @@
             },
             slideAnimateInit : function () {
                 $(this).find('[data-speed]').each(function () {
-                        var x = ($(this).attr('data-x-start'))? $(this).attr('data-x-start') : false,
-                            y = ($(this).attr('data-y-start'))? $(this).attr('data-y-start') : false,
-                            opacity = ($(this).attr('data-opacity-start'))? $(this).attr('data-opacity-start') : false,
-                            options = {};
+                    var x = ($(this).attr('data-x-start'))? $(this).attr('data-x-start') : false,
+                        y = ($(this).attr('data-y-start'))? $(this).attr('data-y-start') : false,
+                        opacity = ($(this).attr('data-opacity-start'))? $(this).attr('data-opacity-start') : false,
+                        options = {};
                     if (x) {
                         options.left = x + 'px';
                     }
@@ -220,8 +240,9 @@
             },
             pillClickHandler : function (event) {
                 var index = $(this).index();
-                event = (!event)? window.event : event;
-                event.preventDefault();
+                if (event) {
+                    event.preventDefault();
+                }
                 if (index === slideIndex) {
                     return;
                 }
@@ -242,7 +263,7 @@
                 interstitial = $('<li></li>');
                 interstitial.append(el);
                 interstitial.hide();
-                container.find('ul').append(interstitial);
+                container.find('ul:first').append(interstitial);
             },
             removeInterstitial : function () {
                 if (interstitial) {
