@@ -27,6 +27,7 @@
             pillContainer,
             arrowContainer,
             touchable = true,
+            hasTouched = false,
             interstitial;
 
         methods = {
@@ -56,8 +57,8 @@
                         }
                         slides.push($(this));
                     });
-                    methods.createPills(event);
-                    methods.enable(event);
+                    methods.createPills();
+                    methods.enable();
                 });
             },
             changeCallback : function (currentSlide) {
@@ -93,6 +94,19 @@
                     $(this).off('click', methods.pillClickHandler);
                 });
             },
+            prepareSlide : function () {
+                if (touchable && hasTouched) {
+                    currentSlide.find('iframe').each(function () {
+                        var x = $(this).offset().left,
+                            y = $(this).offset().top,
+                            width = $(this).width(),
+                            height = $(this).height(),
+                            cover = $('<div class="framecover"></div>');
+                        cover.css({position: 'absolute', zIndex: 10000, left: x, top: y, width: width, height: height});
+                        currentSlide.append(cover);
+                    });
+                }
+            },
             next : function (event) {
                 if (event) {
                     event.preventDefault();
@@ -115,6 +129,7 @@
                     {duration: duration, easing: easing, complete: methods.slideOutCallback}
                 );
                 currentSlide = (interstitial && currentSlide != interstitial)? interstitial : slides[slideIndex];
+                methods.prepareSlide();
                 currentSlide.show().css({left: containerWidth}).each(methods.slideAnimateInit).stop().animate(
                     {left: 0},
                     {duration: duration, easing: easing, complete: methods.slideAnimatePlay}
@@ -143,6 +158,7 @@
                     {duration: duration, easing: easing, complete: methods.slideOutCallback}
                 );
                 currentSlide = (interstitial && currentSlide != interstitial)? interstitial : slides[slideIndex];
+                methods.prepareSlide();
                 currentSlide.show().css({left: -containerWidth}).each(methods.slideAnimateInit).stop().animate(
                     {left: 0},
                     {duration: duration, easing: easing, complete: methods.slideAnimatePlay}
@@ -199,8 +215,10 @@
             },
             touchstartHandler : function (event) {
                 var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+                hasTouched = true;
                 touchstartTime = new Date().getTime();
                 touchstartX = touch.pageX;
+                container.find('.framecover').hide();
             },
             touchmoveHandler : function (event) {
                 var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0],
@@ -211,6 +229,7 @@
             touchendHandler : function (event) {
                 var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0],
                     touchSpace = touchstartX - touch.pageX;
+                container.find('.framecover').show();
                 if (Math.abs(touchSpace) > touchDistance) {
                     event.preventDefault();
                     if (touchSpace > 0) {

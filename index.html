@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="css/homeslider.css" media="screen" />
 
     <!-- Mobile viewport optimized: h5bp.com/viewport -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1">
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
@@ -159,11 +159,11 @@
 </div><!-- page-container -->
 <script type="text/javascript">
 var slideshow, count = 1,
-    interstitial = '<div class="interstitial"><h1>Ad Interstitial</h1></div>';
+    interstitial = '<div class="interstitial"><iframe src="ad.html" width="1000" height="300" frameborder="0"></iframe></div>';
 function changeCallback (currentSlide) {
     count += 1;
-    if (count > 3) {
-        count = 0;
+    if (count > 1) {
+        count = -1;
         slideshow.fn.addInterstitial(interstitial);
     }
     console.log($(currentSlide).index());
