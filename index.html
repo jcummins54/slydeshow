@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="description" content="A lightweight jQuery slideshow plugin." />
 
-    <link rel="stylesheet" type="text/css" href="css/homeslider.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="css/slydeshow.css" media="screen" />
 
     <!-- Mobile viewport optimized: h5bp.com/viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1">
@@ -27,6 +27,7 @@
             margin: 30px auto;
             width: 1130px;
         }
+
         .video {
             width: 1000px;
             padding: 0;
@@ -35,6 +36,7 @@
         .video-container {
             display: block;
             float: left;
+            width: 560px;
         }
         .video-description {
             display: block;
@@ -47,18 +49,6 @@
         }
         .video-lede {
             position: relative;
-        }
-        .interstitial {
-            position: absolute;
-            display: block;
-            width: 1000px;
-            height: 300px;
-            background: #9ff;
-        }
-        .interstitial h1 {
-            display: block;
-            width: 100%;
-            text-align: center;
         }
         #info {
             margin: 30px auto;
@@ -78,73 +68,71 @@
 <body class="home">
 
 <div id="page-container">
+    <div id="main-slideshow">
+        <ul>
+            <li>
+                <div class="video">
+                    <div class="video-container">
+                        <iframe width="560" height="315" src="http://www.youtube.com/embed/Fgw0CHRLBjE" frameborder="0" allowfullscreen></iframe>
+                    </div>
 
-    <div class="homeslider">
-        <div class="slideshow">
-            <div class="slide-container">
-                <ul class="slide-ul">
-                    <li>
-                        <div class="video">
-                            <div class="video-container">
-                                <iframe width="560" height="315" src="http://www.youtube.com/embed/Fgw0CHRLBjE" frameborder="0" allowfullscreen></iframe>
-                            </div>
+                    <div class="video-description">
+                        <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Rising: Rebuilding Ground Zero</h1>
+                        <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
+                        </div>
+                    </div>
+                </div><!-- video -->
+            </li>
+            <li>
+                <div class="video">
+                    <div class="video-container">
+                        <iframe width="560" height="315" src="http://www.youtube.com/embed/BT07QRJ5_s0" frameborder="0" allowfullscreen></iframe>
+                    </div>
 
-                            <div class="video-description">
-                                <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Rising: Rebuilding Ground Zero</h1>
-                                <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
-                                </div>
-                            </div>
-                        </div><!-- video -->
-                    </li>
-                    <li>
-                        <div class="video">
-                            <div class="video-container">
-                                <iframe width="560" height="315" src="http://www.youtube.com/embed/BT07QRJ5_s0" frameborder="0" allowfullscreen></iframe>
-                            </div>
+                    <div class="video-description">
+                        <h1 d       ata-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Sheriff of Ghost Town</h1>
+                        <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
+                        </div>
+                    </div>
+                </div><!-- video -->
+            </li>
+            <li>
+                <div class="video">
+                    <div class="video-container">
+                        <iframe width="560" height="315" src="http://www.youtube.com/embed/fRim-Lzko1Q" frameborder="0" allowfullscreen></iframe>
+                    </div>
 
-                            <div class="video-description">
-                                <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Sheriff of Ghost Town</h1>
-                                <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
-                                </div>
-                            </div>
-                        </div><!-- video -->
-                    </li>
-                    <li>
-                        <div class="video">
-                            <div class="video-container">
-                                <iframe width="560" height="315" src="http://www.youtube.com/embed/fRim-Lzko1Q" frameborder="0" allowfullscreen></iframe>
-                            </div>
+                    <div class="video-description">
+                        <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Super Sellers</h1>
+                        <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
+                        </div>
+                    </div>
+                </div><!-- video -->
+            </li>
+            <li>
+                <div class="video">
+                    <div class="video-container">
+                        <iframe width="560" height="315" src="http://www.youtube.com/embed/MkwnTjHT-_c" frameborder="0" allowfullscreen></iframe>
+                    </div>
 
-                            <div class="video-description">
-                                <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Super Sellers</h1>
-                                <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
-                                </div>
-                            </div>
-                        </div><!-- video -->
-                    </li>
-                    <li>
-                        <div class="video">
-                            <div class="video-container">
-                                <iframe width="560" height="315" src="http://www.youtube.com/embed/MkwnTjHT-_c" frameborder="0" allowfullscreen></iframe>
-                            </div>
-
-                            <div class="video-description">
-                                <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Model Pups</h1>
-                                <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
-                                </div>
-                            </div>
-                        </div><!-- video -->
-                    </li>
-                </ul>
-            </div><!-- slide-container -->
+                    <div class="video-description">
+                        <h1 data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-easing="easeOutExpo">Model Pups</h1>
+                        <div class="video-lede" data-x-start="100" data-x-end="0" data-opacity-start="0" data-opacity-end="1" data-speed="300" data-delay="300" data-easing="easeOutExpo">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor rutrum ligula aliquam dictum. Vestibulum dui nisl, volutpat et molestie quis, mollis sed nulla. Aenean at tortor dui. Mauris sit amet justo arcu. Pellentesque hendrerit, enim tristique ultricies luctus, odio tellus tempus nulla, eu commodo nisi erat at lacus.</p>
+                        </div>
+                    </div>
+                </div><!-- video -->
+            </li>
+        </ul>
+        <div class="slydeshow-controls">
             <a href="#" class="arrow-prev">&nbsp;</a>
             <a href="#" class="arrow-next">&nbsp;</a>
-        </div><!-- slideshow -->
-    </div><!-- homeslider --></div>
+        </div>
+    </div><!-- slydeshow -->
+
     <div id="info">
         <h2>Slydeshow</h2>
         <p>A lightweight, flexible jQuery slideshow plugin. Features include:</p>
@@ -158,21 +146,21 @@
     </div>
 </div><!-- page-container -->
 <script type="text/javascript">
-var slideshow, count = 1,
-    interstitial = '<div class="interstitial"><iframe src="ad.html" width="1000" height="300" frameborder="0"></iframe></div>';
+var slideshow,
+    count = 1,
+    interstitial = '<iframe src="ad.html" width="1000" height="300" frameborder="0"></iframe>';
+document.domain = document.domain;
 function changeCallback (currentSlide) {
     count += 1;
-    if (count > 3) {
+    if (count > 2) {
         count = -1;
         slideshow.fn.addInterstitial(interstitial);
     }
-    console.log($(currentSlide).index());
+    console.log(currentSlide.index());
     console.log(currentSlide);
 }
 $(document).ready(function () {
-    if ($('.slideshow').length !== 0) {
-        slideshow = $('.slideshow').slydeshow({duration: 600, easing: 'easeOutExpo'}, changeCallback);
-    }
+    slideshow = $('#main-slideshow').slydeshow({duration: 600, easing: 'easeOutExpo'}, changeCallback);
 });
 </script>
 </body>

@@ -1,26 +1,23 @@
-/** Homeslider View Styles **/
+/** Slydeshow Styles **/
 
-.slideshow {
+.slydeshow {
     position: relative;
     width: 1120px;
     height: 380px;
 }
 
-.slide-container {
+.slydeshow > ul {
     position: relative;
     width: 1000px;
     height: 380px;
     left: 60px;
-    overflow: hidden;
-}
-
-.slideshow ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
+    overflow: hidden;
 }
 
-.slideshow ul li {
+.slydeshow > ul > li {
     position: relative;
     float: left;
     display: inline;
@@ -30,50 +27,51 @@
     padding-left: 1px;
 }
 
-.slideshow ul li .video .video-container {
-    width: 560px;
+.slydeshow-controls {
+    z-index: 3;
+    position: absolute;
+    width: 1120px;
+    top: 110px;
 }
 
-.slideshow .arrow-prev {
+.slydeshow-controls .arrow-prev {
     z-index: 2;
     position: absolute;
     cursor: pointer;
     left: 5px;
-    top: 110px;
     width: 44px;
     height: 95px;
     text-decoration: none;
     background: url('../image/arrow-left.png') 0 0 no-repeat;
 }
 
-.slideshow .arrow-prev:hover {
+.slydeshow-controls .arrow-prev:hover {
     background-position:0 -95px;
 }
 
-.slideshow .arrow-next {
+.slydeshow-controls .arrow-next {
     z-index: 2;
     position: absolute;
     cursor: pointer;
     right: 5px;
-    top: 110px;
     width: 44px;
     height: 95px;
     text-decoration: none;
     background: url('../image/arrow-right.png') 0 0 no-repeat;
 }
 
-.slideshow .arrow-next:hover {
+.slydeshow-controls .arrow-next:hover {
     background-position:0 -95px;
 }
 
-.slideshow-pills {
+.slydeshow-pills {
     z-index: 1;
     position: absolute;
     display: block;
     height: 14px;
     bottom: 0;
 }
-.slideshow-pills span {
+.slydeshow-pills span {
     display: inline-block;
     border: solid 1px #0c1722;
     margin: 0 5px;
@@ -88,9 +86,9 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -3px 4px rgba(0, 0, 0, 0.3);
     cursor: pointer;
 }
-.slideshow-pills span.active {
+.slydeshow-pills span.active {
     background-color: #054e70;
 }
-.slideshow-pills span:hover {
+.slydeshow-pills span:hover {
     background: #054e70;
 }

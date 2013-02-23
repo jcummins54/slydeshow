@@ -4,36 +4,50 @@
  * @version     1.0
  * @url         http://www.royaldigit.com/slydeshow/
  * @license     MIT License
+ *
+ * Available Options:
+ * duration -- Int - time transition takes in milliseconds
+ * easing -- String - slide transition easing (see http://easings.net/ for easing examples)
+ * arrowContainer -- HTML element - defines element that contains next and previous arrows. Used when arrows must be outside the slydeshow div.
+ * touchable -- Boolean - defines whether slideshow responds to touch events
+ * touchTarget -- HTML element - defines element to be used as touchable area
+ * clickCallback -- Function - method to call on interface click event (will fire on arrow or pill button click)
+ * changeCallback -- Function - method to call on slide change complete
  */
 
 (function ($) {
     'use strict';
 
     $.fn.slydeshow = function (method, callback) {
-        var container,
+        var self = this,
+            container,
             duration = 700,
-            easing = 'easeOutBack',
-            methods,
-            slideWidth = $(this).find('.slide-container:first').width(),
-            containerWidth = $(this).width(),
+            easing = 'easeOutExpo',
+            containerWidth = $(this).find('ul:first').width(),
             slideIndex = 0,
-            slideLimit = $(this).find('.slide-container ul:first > li').size() - 1,
+            slideLimit = $(this).find('ul:first > li').size() - 1,
             slides = [],
             currentSlide,
             lastSlide,
+            outNum = 0,
+            outCount = 0,
             touchDistance = 100,
             touchstartTime,
             touchstartX,
             pillContainer,
             arrowContainer,
+            isNext = true,
             touchable = true,
-            hasTouched = false,
+            touchTarget,
             interstitial;
 
-        methods = {
-            init : function(options) {
-                return this.each(function(){
+        self.fn = {
+            init: function (options) {
+                return this.each(function () {
                     container = $(this);
+                    if(!container.hasClass('slydeshow')) {
+                        container.addClass('slydeshow');
+                    }
                     if (options.duration) {
                         duration = options.duration;
                     }
@@ -48,137 +62,167 @@
                     if (options.touchable) {
                         touchable = true;
                     }
+                    if (options.touchTarget) {
+                        touchTarget = options.touchTarget;
+                    } else {
+                        touchTarget = container.find('ul:first');
+                    }
+                    if (options.clickCallback && typeof options.clickCallback === 'function') {
+                        self.fn.clickCallback = options.clickCallback;
+                    }
+                    if (options.changeCallback && typeof options.changeCallback === 'function') {
+                        self.fn.changeCallback = options.changeCallback;
+                    }
                     $(this).find('ul:first > li').each(function () {
                         if (!currentSlide) {
+                            $(this).css({display: 'block', position: 'absolute', width: containerWidth, left: 0, top: 0});
                             currentSlide = $(this);
-                            $(this).css({display: 'block', position: 'absolute', width: slideWidth, left: 0, top: 0});
                         } else {
-                            $(this).css({display: 'block', position: 'absolute', width: slideWidth, left: containerWidth, top: 0});
+                            $(this).css({display: 'block', position: 'absolute', width: containerWidth, left: containerWidth, top: 0});
                         }
                         slides.push($(this));
                     });
-                    methods.createPills();
-                    methods.enable();
+                    self.fn.createPills();
+                    self.fn.enable();
                 });
             },
-            changeCallback : function (currentSlide) {
-                //Overwritten by user
+            clickCallback: function (slideIndex) {
+                //Overwritten by user -- triggered on any button click or touch swipe
             },
-            enable : function (event) {
+            changeCallback: function (currentSlide) {
+                //Overwritten by user -- triggered on slide change
+            },
+            enable: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
-                arrowContainer.find('.arrow-next').on('click', methods.next);
-                arrowContainer.find('.arrow-prev').on('click', methods.prev);
+                arrowContainer.find('.arrow-next').on('click', self.fn.next);
+                arrowContainer.find('.arrow-prev').on('click', self.fn.prev);
+                self.fn.makeTouchable(touchTarget);
+                pillContainer.children().each(function () {
+                    $(this).on('click', self.fn.pillClickHandler);
+                });
+            },
+            disable: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                arrowContainer.find('.arrow-next').off('click', self.fn.next);
+                arrowContainer.find('.arrow-prev').off('click', self.fn.prev);
+                self.fn.makeUntouchable(touchTarget);
+                pillContainer.children().each(function () {
+                    $(this).off('click', self.fn.pillClickHandler);
+                });
+            },
+            setTouchtarget: function (el) {
+                self.fn.makeUntouchable(touchTarget);
+                touchTarget = el;
+                self.fn.makeTouchable(touchTarget);
+            },
+            makeTouchable: function (el) {
                 if (touchable) {
-                    container.find('.slide-container').on('touchstart', methods.touchstartHandler);
-                    container.find('.slide-container').on('touchmove', methods.touchmoveHandler);
-                    container.find('.slide-container').on('touchend', methods.touchendHandler);
+                    $(el).on('touchstart', self.fn.touchstartHandler);
+                    $(el).on('touchmove', self.fn.touchmoveHandler);
+                    $(el).on('touchend', self.fn.touchendHandler);
                 }
-                pillContainer.children().each(function() {
-                    $(this).on('click', methods.pillClickHandler);
-                });
             },
-            disable : function (event) {
+            makeUntouchable: function (el) {
+                $(el).off('touchstart', self.fn.touchstartHandler);
+                $(el).off('touchmove', self.fn.touchmoveHandler);
+                $(el).off('touchend', self.fn.touchendHandler);
+            },
+            prepareSlide: function () {
+                $(this).find('ul:first > li').css({zIndex: 1});
+                currentSlide.css({zIndex: 2});
+            },
+            next: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
-                arrowContainer.find('.arrow-next').off('click', methods.next);
-                arrowContainer.find('.arrow-prev').off('click', methods.prev);
-                if (touchable) {
-                    container.find('.slide-container').off('touchstart', methods.touchstartHandler);
-                    container.find('.slide-container').off('touchmove', methods.touchmoveHandler);
-                    container.find('.slide-container').off('touchend', methods.touchendHandler);
+                isNext = true;
+                if (interstitial && lastSlide === interstitial) {
+                    self.fn.removeInterstitial();
                 }
-                pillContainer.children().each(function() {
-                    $(this).off('click', methods.pillClickHandler);
-                });
-            },
-            prepareSlide : function () {
-                if (touchable && hasTouched) {
-                    currentSlide.find('iframe').each(function () {
-                        var x = $(this).offset().left,
-                            y = $(this).offset().top,
-                            width = $(this).width(),
-                            height = $(this).height(),
-                            cover = $('<div class="framecover"></div>');
-                        cover.css({position: 'absolute', zIndex: 10000, left: x, top: y, width: width, height: height});
-                        currentSlide.append(cover);
-                    });
-                }
-            },
-            next : function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-                if (!interstitial || interstitial === currentSlide || interstitial === lastSlide) {
+                if (!interstitial || interstitial === currentSlide) {
                     slideIndex += 1;
                     if (slideIndex > slideLimit) {
                         slideIndex = 0;
                     }
                 }
-                methods.moveNext(event);
-            },
-            moveNext : function (event) {
+                currentSlide.each(function () {
+                    self.fn.slideAnimateOut(this, self.fn.moveNext);
+                });
                 if (event) {
-                    event.preventDefault();
+                    self.fn.clickCallback(slideIndex);
                 }
+            },
+            moveNext: function () {
                 lastSlide = currentSlide;
                 lastSlide.stop().animate(
                     {left: -containerWidth},
-                    {duration: duration, easing: easing, complete: methods.slideOutCallback}
+                    {duration: duration, easing: easing, complete: self.fn.slideOutCallback}
                 );
-                currentSlide = (interstitial && currentSlide != interstitial)? interstitial : slides[slideIndex];
-                methods.prepareSlide();
-                currentSlide.show().css({left: containerWidth}).each(methods.slideAnimateInit).stop().animate(
+                currentSlide = (interstitial && currentSlide !== interstitial) ? interstitial : slides[slideIndex];
+                self.fn.prepareSlide();
+                currentSlide.show().css({left: containerWidth}).each(self.fn.slideAnimateInit).stop().animate(
                     {left: 0},
-                    {duration: duration, easing: easing, complete: methods.slideAnimatePlay}
+                    {duration: duration, easing: easing, complete: self.fn.slideAnimatePlay}
                 );
-                methods.setPill(event);
+                self.fn.setPill();
             },
-            prev : function (event) {
+            prev: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
-                if (!interstitial || interstitial === currentSlide || interstitial === lastSlide) {
+                isNext = false;
+                if (interstitial && lastSlide === interstitial) {
+                    self.fn.removeInterstitial();
+                }
+                if (!interstitial || interstitial === currentSlide) {
                     slideIndex -= 1;
                     if (slideIndex < 0) {
                         slideIndex = slideLimit;
                     }
                 }
-                methods.movePrev(event);
-            },
-            movePrev : function (event) {
+                currentSlide.each(function () {
+                    self.fn.slideAnimateOut(this, self.fn.movePrev);
+                });
                 if (event) {
-                    event.preventDefault();
+                    self.fn.clickCallback(slideIndex);
                 }
+            },
+            movePrev: function () {
                 lastSlide = currentSlide;
                 lastSlide.stop().animate(
                     {left: containerWidth},
-                    {duration: duration, easing: easing, complete: methods.slideOutCallback}
+                    {duration: duration, easing: easing, complete: self.fn.slideOutCallback}
                 );
-                currentSlide = (interstitial && currentSlide != interstitial)? interstitial : slides[slideIndex];
-                methods.prepareSlide();
-                currentSlide.show().css({left: -containerWidth}).each(methods.slideAnimateInit).stop().animate(
+                currentSlide = (interstitial && currentSlide !== interstitial) ? interstitial : slides[slideIndex];
+                self.fn.prepareSlide();
+                currentSlide.show().css({left: -containerWidth}).each(self.fn.slideAnimateInit).stop().animate(
                     {left: 0},
-                    {duration: duration, easing: easing, complete: methods.slideAnimatePlay}
+                    {duration: duration, easing: easing, complete: self.fn.slideAnimatePlay}
                 );
-                methods.setPill(event);
+                self.fn.setPill();
             },
-            slideOutCallback : function () {
+            slideOutCallback: function () {
                 //Replace html with own html to stop videos from playing when moved offscreen.
                 $(this).html($(this).html()).hide();
                 if (interstitial && lastSlide === interstitial) {
-                    methods.removeInterstitial();
+                    self.fn.removeInterstitial();
                 }
             },
-            slideAnimateInit : function () {
+            slideAnimateInit: function () {
                 $(this).find('[data-speed]').each(function () {
                     var x = ($(this).attr('data-x-start'))? $(this).attr('data-x-start') : false,
                         y = ($(this).attr('data-y-start'))? $(this).attr('data-y-start') : false,
                         opacity = ($(this).attr('data-opacity-start'))? $(this).attr('data-opacity-start') : false,
+                        reverse = ($(this).attr('data-reverse'))? $(this).attr('data-reverse') : false,
                         options = {};
                     if (x) {
+                        if (reverse && !isNext) {
+                            x = -x;
+                        }
                         options.left = x + 'px';
                     }
                     if (y) {
@@ -190,16 +234,20 @@
                     $(this).css(options).hide();
                 });
             },
-            slideAnimatePlay : function () {
+            slideAnimatePlay: function () {
                 $(this).find('[data-speed]').each(function () {
                     var x = ($(this).attr('data-x-end'))? $(this).attr('data-x-end') : false,
                         y = ($(this).attr('data-y-end'))? $(this).attr('data-y-end') : false,
                         speed = $(this).attr('data-speed'),
                         opacity = ($(this).attr('data-opacity-end'))? $(this).attr('data-opacity-end') : false,
                         delay = ($(this).attr('data-delay'))? $(this).attr('data-delay') : 0,
+                        reverse = ($(this).attr('data-reverse'))? $(this).attr('data-reverse') : false,
                         easing = ($(this).attr('data-easing'))? $(this).attr('data-easing') : 'linear',
                         options = {};
                     if (x) {
+                        if (reverse && !isNext) {
+                            x = -x;
+                        }
                         options.left = x;
                     }
                     if (y) {
@@ -213,51 +261,95 @@
                 });
                 currentSlide.stop().animate({left: 0}, {duration: duration, easing: easing});
             },
-            touchstartHandler : function (event) {
+            slideAnimateOut: function (self, onComplete) {
+                outNum = 0;
+                outCount = 0;
+                $(self).find('[data-speed]').each(function () {
+                    var x = ($(this).attr('data-x-out'))? $(this).attr('data-x-out') : false,
+                        y = ($(this).attr('data-y-out'))? $(this).attr('data-y-out') : false,
+                        speed = ($(this).attr('data-speed-out'))? $(this).attr('data-speed-out') : $(this).attr('data-speed'),
+                        opacity = ($(this).attr('data-opacity-out'))? $(this).attr('data-opacity-out') : false,
+                        delay = ($(this).attr('data-delay-out'))? $(this).attr('data-delay-out') : 0,
+                        reverse = ($(this).attr('data-reverse'))? $(this).attr('data-reverse') : false,
+                        easing = ($(this).attr('data-easing-out'))?
+                            $(this).attr('data-easing-out')
+                            : ($(this).attr('data-easing'))? $(this).attr('data-easing') : 'linear',
+                        options = {};
+                    if (!x && !y && !opacity) {
+                        return;
+                    }
+                    outNum += 1;
+                    if (x) {
+                        if (reverse && !isNext) {
+                            x = -x;
+                        }
+                        options.left = x;
+                    }
+                    if (y) {
+                        options.top = y;
+                    }
+                    if (opacity) {
+                        options.opacity = opacity;
+                    }
+                    $(this).stop().show().delay(delay).animate(options,
+                        {duration: speed, easing: easing, complete: function () {
+                            self.fn.animateOutComplete(onComplete);
+                        }});
+                });
+                if (outNum === outCount) {
+                    onComplete();
+                }
+            },
+            animateOutComplete: function (onComplete) {
+                outCount += 1;
+                if (outCount >= outNum) {
+                    onComplete();
+                }
+            },
+            touchstartHandler: function (event) {
                 var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
-                hasTouched = true;
                 touchstartTime = new Date().getTime();
                 touchstartX = touch.pageX;
                 container.find('.framecover').hide();
             },
-            touchmoveHandler : function (event) {
+            touchmoveHandler: function (event) {
                 var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0],
                     left = touch.pageX - touchstartX;
                 event.preventDefault();
                 currentSlide.css({left: left});
             },
-            touchendHandler : function (event) {
+            touchendHandler: function (event) {
                 var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0],
                     touchSpace = touchstartX - touch.pageX;
                 container.find('.framecover').show();
                 if (Math.abs(touchSpace) > touchDistance) {
                     event.preventDefault();
                     if (touchSpace > 0) {
-                        methods.next(event);
+                        self.fn.next(event);
                     } else {
-                        methods.prev(event);
+                        self.fn.prev(event);
                     }
                 } else {
                     currentSlide.animate({left: 0}, {duration: 300, easing: 'easeOutBack'});
                 }
             },
-            createPills : function () {
+            createPills: function () {
                 var i, left;
-                pillContainer = $('<span class="slideshow-pills"></span>');
+                pillContainer = $('<span class="slydeshow-pills"></span>');
                 container.append(pillContainer);
                 for (i = 0; i < slides.length; i += 1) {
                     pillContainer.append('<span></span>');
                 }
-                left = Math.abs((containerWidth - pillContainer.width()) / 2);
-                pillContainer.css({left: left});
+                left = Math.abs((container.width() - pillContainer.width()) / 2);
+                pillContainer.css({left:left});
                 $(pillContainer.children()[0]).addClass('active');
             },
-            setPill : function () {
+            setPill: function () {
                 $(pillContainer.children()).removeClass('active');
                 $(pillContainer.children()[slideIndex]).addClass('active');
-                methods.changeCallback(currentSlide);
+                self.fn.changeCallback(currentSlide);
             },
-            pillClickHandler : function (event) {
+            pillClickHandler: function (event) {
                 var index = $(this).index();
                 if (event) {
                     event.preventDefault();
@@ -269,22 +361,23 @@
                     if (!interstitial || currentSlide === interstitial) {
                         slideIndex = index;
                     }
-                    methods.movePrev(event);
+                    self.fn.movePrev(event);
                 } else {
                     if (!interstitial || currentSlide === interstitial) {
                         slideIndex = index;
                     }
-                    methods.moveNext(event);
+                    self.fn.moveNext(event);
                 }
+                self.fn.clickCallback(slideIndex);
             },
-            addInterstitial : function (el) {
-                methods.removeInterstitial();
+            addInterstitial: function (el) {
+                self.fn.removeInterstitial();
                 interstitial = $('<li></li>');
                 interstitial.append(el);
                 interstitial.hide();
                 container.find('ul:first').append(interstitial);
             },
-            removeInterstitial : function () {
+            removeInterstitial: function () {
                 if (interstitial) {
                     interstitial.remove();
                     interstitial = undefined;
@@ -292,18 +385,16 @@
             }
         };
 
-        this.fn = methods;
-
         if (typeof callback === 'function') {
-            methods.changeCallback = callback;
+            self.fn.changeCallback = callback;
         }
 
-        if ( methods[method] ) {
-            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-        } else if (typeof method === 'object' || ! method) {
-            return methods.init.apply( this, arguments );
+        if (self.fn[method]) {
+            return self.fn[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return self.fn.init.apply(this, arguments);
         } else {
-            $.error('Method ' +  method + ' does not exist on jQuery.slydeshow');
+            $.error('Method ' + method + ' does not exist on jQuery.slydeshow');
         }
     };
 }(jQuery));
