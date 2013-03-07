@@ -48,6 +48,9 @@
                     if(!container.hasClass('slydeshow')) {
                         container.addClass('slydeshow');
                     }
+                    if (options === undefined) {
+                        options = {};
+                    }
                     if (options.duration) {
                         duration = options.duration;
                     }
